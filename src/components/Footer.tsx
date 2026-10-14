@@ -58,7 +58,7 @@ function handleScrollTop() {
 export default function Footer() {
   return (
     <footer className="border-t border-steel-line bg-graphite">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 pt-16 xl:max-w-[1400px] 2xl:max-w-[1800px] sm:flex-row sm:items-start md:px-10">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 pt-16 xl:max-w-[1400px] 2xl:max-w-[1800px] sm:flex-row sm:items-start md:px-10">
         <Link href="/#top" className="shrink-0">
           <Image
             src="/avanlog__1_-removebg-preview.png"
@@ -83,7 +83,7 @@ export default function Footer() {
         <div className="border-t border-dotted border-steel-line" />
         <div className="grid grid-cols-1 gap-10 py-10 sm:grid-cols-2 lg:grid-cols-4">
           {COLUMNS.map((col) => (
-            <div key={col.heading} className="text-center sm:text-left">
+            <div key={col.heading} className="text-left">
               <p className="text-sm font-medium text-paper">{col.heading}</p>
               <ul className="mt-4 flex flex-col gap-2.5 text-sm">
                 {col.links.map((link) => (
@@ -104,7 +104,7 @@ export default function Footer() {
         <div className="border-t border-dotted border-steel-line" />
       </div>
 
-      <div className="flex items-center justify-center gap-4 px-6 pb-10">
+      <div className="flex flex-wrap items-center justify-center gap-3 px-6 pb-10 sm:gap-4">
         <a href="mailto:avanlog@orynticlabs.com" aria-label="Email Avanlog" className={pillClass}>
           <Mail className="h-4 w-4" strokeWidth={1.5} />
         </a>
@@ -150,7 +150,7 @@ export default function Footer() {
               Oryntic Labs Private Limited.
             </a>
           </p>
-          <div className="flex items-center justify-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-5">
             <Link href="/privacy" className="transition-colors hover:text-paper">
               Privacy Policy
             </Link>

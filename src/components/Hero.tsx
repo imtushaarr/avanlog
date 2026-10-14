@@ -142,9 +142,6 @@ export default function Hero() {
       <div ref={rippleLayerRef} aria-hidden="true" className="pointer-events-none absolute inset-0" />
 
       <div className="relative z-10 mb-auto flex w-full items-center justify-between gap-6">
-        <span className="inline-flex items-center gap-2 rounded-full border border-paper/20 bg-black/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-paper backdrop-blur-sm">
-          Cloud Infrastructure · DevOps · SRE
-        </span>
         <span className="hidden items-center gap-2 text-xs font-medium uppercase tracking-[0.15em] text-fog sm:flex">
           Built for teams that cannot afford unreliable releases
         </span>
@@ -152,11 +149,11 @@ export default function Hero() {
 
       <div className="relative z-10 flex w-full flex-col gap-6">
         <div className="flex max-w-5xl flex-col items-start gap-6">
-          <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-paper sm:text-5xl lg:text-6xl">
-            <span className="block whitespace-nowrap">
-              Cloud infrastructure that automates, scales,
+          <h1 className="font-display text-[28px] font-bold leading-[1.25] tracking-tight text-paper sm:text-5xl sm:leading-[1.1] lg:text-6xl">
+            <span className="sm:block sm:whitespace-nowrap">
+              Cloud infrastructure that automates, scales,{" "}
             </span>
-            <span className="block">and future-proofs your business.</span>
+            <span className="sm:block">and future-proofs your business.</span>
           </h1>
           <p className="max-w-xl text-base leading-relaxed text-fog sm:text-lg">
             A trusted operations partner delivering secure, scalable, and
@@ -173,11 +170,11 @@ export default function Hero() {
         </div>
 
         <div className="mt-2 flex w-full flex-wrap items-end justify-between gap-10 lg:gap-24 xl:gap-32">
-          <div className="flex flex-wrap items-center gap-x-16 gap-y-6 border-t border-paper/15 pt-8 sm:gap-x-20">
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-6 border-t border-paper/15 pt-8 sm:gap-x-16 lg:gap-x-20">
             {STATS.map((stat) => (
               <div key={stat.label} className="flex flex-col gap-1.5">
-                <span className="text-base text-fog">{stat.label}</span>
-                <span className="font-display text-3xl font-bold text-paper sm:text-4xl">
+                <span className="text-sm text-fog sm:text-base">{stat.label}</span>
+                <span className="font-display text-2xl font-bold text-paper sm:text-3xl lg:text-4xl">
                   <AnimatedStat value={stat.value} />
                 </span>
               </div>

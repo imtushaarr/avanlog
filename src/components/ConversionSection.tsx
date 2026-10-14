@@ -4,6 +4,7 @@ import { useId, useState, type FormEvent } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
+import { leadSchema } from "@/lib/leadSchema";
 
 const CLOUD_PROVIDERS = ["AWS", "Azure", "Google Cloud", "Multiple", "Other / none"];
 const INTEREST_AREAS = [
@@ -21,45 +22,67 @@ const inputClass =
 const labelClass = "text-sm font-medium text-ink-fog";
 
 export default function ConversionSection() {
-  const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const honeypotId = useId();
 
-  const validate = (form: HTMLFormElement): FieldErrors => {
-    const data = new FormData(form);
-    const next: FieldErrors = {};
-
-    const name = String(data.get("name") ?? "").trim();
-    if (!name) next.name = "Enter your name.";
-
-    const email = String(data.get("email") ?? "").trim();
-    if (!email) next.email = "Enter your work email.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "Enter a valid email address.";
-
-    const company = String(data.get("company") ?? "").trim();
-    if (!company) next.company = "Enter your company name.";
-
-    const description = String(data.get("description") ?? "").trim();
-    if (description.length < 20) next.description = "Add a few more details (at least 20 characters).";
-
-    return next;
-  };
-
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
+    const data = new FormData(form);
 
-    if (String(new FormData(form).get("company-website") ?? "")) return;
+    const payload = {
+      name: String(data.get("name") ?? ""),
+      email: String(data.get("email") ?? ""),
+      company: String(data.get("company") ?? ""),
+      cloudProvider: String(data.get("cloudProvider") ?? ""),
+      interest: String(data.get("interest") ?? ""),
+      description: String(data.get("description") ?? ""),
+      "company-website": String(data.get("company-website") ?? ""),
+    };
 
-    const nextErrors = validate(form);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    const parsed = leadSchema.safeParse(payload);
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      setErrors({
+        name: fieldErrors.name?.[0],
+        email: fieldErrors.email?.[0],
+        company: fieldErrors.company?.[0],
+        description: fieldErrors.description?.[0],
+      });
+      return;
+    }
+    setErrors({});
+    setSubmitError(null);
 
     setStatus("submitting");
-    // No PII in this event — just the fact that a lead form was completed
-    // and which service area they're interested in.
-    trackEvent("generate_lead", { interest: String(new FormData(form).get("interest") ?? "") });
-    window.setTimeout(() => setStatus("done"), 600);
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        setStatus("error");
+        setSubmitError(
+          typeof result.error === "string"
+            ? result.error
+            : "Something went wrong sending this — please try again."
+        );
+        return;
+      }
+
+      // No PII in this event — just the fact that a lead was delivered
+      // and which service area they're interested in.
+      trackEvent("generate_lead", { interest: parsed.data.interest });
+      setStatus("done");
+    } catch {
+      setStatus("error");
+      setSubmitError("Couldn't reach the server — check your connection and try again.");
+    }
   };
 
   return (
@@ -105,12 +128,8 @@ export default function ConversionSection() {
 
             {status === "done" ? (
               <div className="self-start rounded-xl border border-surface-line bg-surface p-6 text-sm leading-relaxed text-ink-fog">
-                Thanks for the details — this form isn&rsquo;t connected to a
-                live inbox yet, so please reach out to{" "}
-                <a href="mailto:avanlog@orynticlabs.com" className="font-semibold text-wire hover:underline">
-                  avanlog@orynticlabs.com
-                </a>{" "}
-                directly in the meantime.
+                Thanks — we&rsquo;ve received this and someone from the team
+                will follow up at the email you provided.
               </div>
             ) : (
               <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
@@ -202,6 +221,16 @@ export default function ConversionSection() {
                     <p id="description-error" className="text-xs text-red-600">{errors.description}</p>
                   )}
                 </div>
+
+                {status === "error" && submitError && (
+                  <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700">
+                    {submitError} If this keeps happening, email{" "}
+                    <a href="mailto:avanlog@orynticlabs.com" className="font-semibold underline">
+                      avanlog@orynticlabs.com
+                    </a>{" "}
+                    directly.
+                  </p>
+                )}
 
                 <button
                   type="submit"
