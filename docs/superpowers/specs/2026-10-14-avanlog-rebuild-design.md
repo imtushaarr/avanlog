@@ -1,7 +1,52 @@
 # Avanlog landing page rebuild — design spec
 
 Date: 2026-10-14
-Status: approved pending final user review
+Status: approved, superseded in part by the revision below
+
+## Revision (same day, after initial approval)
+
+The user redirected scope before implementation started:
+
+- **`Nav.tsx`, `Hero.tsx`, `Footer.tsx` are NOT touched.** They keep their
+  current dark graphite theme, copy, and behavior exactly as already live.
+  Sections 5.1 ("Nav"), 5.2 ("Hero"), and 5.15 ("Footer") below, and every
+  reference to rebuilding them, no longer apply.
+- **No token or font migration.** `globals.css` keeps its current token set
+  (dark `--graphite/--steel/--fog/--paper/--signal/--amber/--wire` tokens
+  *and* the already-present light `--surface: #f4f6fb` / `--surface-line:
+  #e2e6f0` / `--ink: #10141d` / `--ink-fog: #5b6372` tokens — the light set
+  was already defined but unused by any component). `layout.tsx` keeps
+  Josefin Sans + IBM Plex Mono — no switch to Inter. Section 3 ("Design
+  tokens") and section 4 ("Typography") below describing a navy/blue/Inter
+  system no longer apply.
+- **Every section between Hero and Footer ships in a white theme**, reusing
+  the existing light tokens (`bg-white` / `bg-surface` / `text-ink` /
+  `text-ink-fog` / `border-surface-line`) rather than the dark
+  `bg-bg`/`text-text` tokens described below.
+- **Keep the full existing gradient accent palette** (wire blue `#4a6cf7`,
+  purple `#8b5cf6`, pink `#ec4899`, amber `#f2a33d`, red `#ef4444`, signal
+  green `#35d07f`, teal `#2dd4bf`) on white card surfaces — not the
+  blue/cyan-only restriction described in section 3 below.
+- `HowWeWork.tsx` and `CaseStudies.tsx` were already rebuilt in a prior
+  session with white cards and the gradient-palette icons/accents this
+  revision wants, but their *section* backgrounds are still dark
+  (`bg-graphite` / `bg-black`) with glow blobs meant for a dark backdrop —
+  those need to flip to a white/light section background (`bg-white` or
+  `bg-surface`) to match "all components in white theme," in addition to
+  the copy/content updates in §5.8/§5.9 below. The card styling and
+  gradient icons inside them do not need to change.
+  Everything else in §5 (ReliabilityMetrics,
+  TechnologyStack, Services, DeploymentPipeline, ObservabilityShowcase,
+  EngagementModels, Security, Insights, FAQ, Conversion) still needs to be
+  built, but on this white theme instead of the navy one.
+- All credibility/content rules (§2), copy/data per section (§5.3–§5.14
+  content, minus their color/token instructions), file deletions (§7), and
+  animation/accessibility/testing rules (§8/§10) still apply unchanged —
+  only the color system and the Nav/Hero/Footer scope changed.
+
+The implementation plan (`docs/superpowers/plans/2026-10-14-avanlog-rebuild.md`)
+has been rewritten to match this revision; it is the authoritative task
+list going forward.
 
 ## 1. Intent
 
